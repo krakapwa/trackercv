@@ -1,0 +1,7 @@
+﻿  Building Custom Rule C:/Users/snk/eyetracker/FrameTracker/dep/eyetribe/CMakeLists.txt
+  CMake does not need to re-run because C:\Users\snk\eyetracker\FrameTracker\dep\eyetribe\CMakeFiles\generate.stamp is up-to-date.
+  gazeapi.cpp
+  gazeapi_parser.cpp
+  gazeapi_socket.cpp
+  Generating Code...
+  GazeApiLib.vcxproj -> C:\Users\snk\eyetracker\FrameTracker\dep\eyetribe\Debug\GazeApiLibD.lib

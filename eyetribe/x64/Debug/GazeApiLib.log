@@ -1,0 +1,19 @@
+﻿  Building Custom Rule C:/Users/snk/eyetracker/FrameTracker/dep/eyetribe/CMakeLists.txt
+  CMake does not need to re-run because C:\Users\snk\eyetracker\FrameTracker\dep\eyetribe\CMakeFiles\generate.stamp is up-to-date.
+  gazeapi.cpp
+c:\users\snk\eyetracker\frametracker\dep\eyetribe\src\gazeapi_observable.hpp(42): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  c:\users\snk\eyetracker\frametracker\dep\eyetribe\src\gazeapi_observable.hpp(41): note: while compiling class template member function 'void gtl::Observable<gtl::IConnectionStateListener>::remove_observer(T &)'
+          with
+          [
+              T=gtl::IConnectionStateListener
+          ]
+  C:\Users\snk\eyetracker\FrameTracker\dep\eyetribe\src\gazeapi.cpp(724): note: see reference to function template instantiation 'void gtl::Observable<gtl::IConnectionStateListener>::remove_observer(T &)' being compiled
+          with
+          [
+              T=gtl::IConnectionStateListener
+          ]
+  C:\Users\snk\eyetracker\FrameTracker\dep\eyetribe\src\gazeapi.cpp(100): note: see reference to class template instantiation 'gtl::Observable<gtl::IConnectionStateListener>' being compiled
+  gazeapi_parser.cpp
+  gazeapi_socket.cpp
+  Generating Code...
+x64\Debug\gazeapi.obj : fatal error LNK1112: module machine type 'x64' conflicts with target machine type 'X86'
