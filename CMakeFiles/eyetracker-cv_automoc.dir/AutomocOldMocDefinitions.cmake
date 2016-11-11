@@ -1,0 +1,1 @@
+set(AM_OLD_COMPILE_SETTINGS "QT_CORE_LIB;QT_GUI_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB ~~~ /home/froggy/Documents/eyetracker-cv;/usr/include/opencv;/usr/include/qt;/usr/include/qt/QtCore;/usr/lib/qt/mkspecs/linux-g++;/usr/include/qt/QtGui;/usr/include/qt/QtWidgets;/usr/include ~~~  ~~~ FALSE ~~~ ")
