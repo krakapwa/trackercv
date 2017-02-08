@@ -1,4 +1,5 @@
 #include "TrackingDataReceiver.h"
+#include <QDebug>
 
 TrackingDataReceiver::TrackingDataReceiver()
 {
@@ -7,12 +8,11 @@ TrackingDataReceiver::TrackingDataReceiver()
 
 TrackingDataReceiver::~TrackingDataReceiver()
 {
-
 }
 
 void TrackingDataReceiver::connect()
 {
-    if(receiver.connect(true))
+    if(receiver.connect())
     {
         receiver.add_listener(*this);
     }
@@ -49,7 +49,7 @@ void TrackingDataReceiver::on_gaze_data(const gtl::GazeData &data)
 
 TrackingData TrackingDataReceiver::getState()
 {
-    boost::lock_guard<boost::mutex> lock(stateMutex);
+    boost::lock_guard<boost::mutex> unlock(stateMutex);
     return state;
 }
 

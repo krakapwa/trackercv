@@ -2,10 +2,9 @@
 #define TRACKINGDATARECEIVER_H
 
 #include <cstdint>
-#include "gazeapi.h"
-#include <boost/thread/mutex.hpp>
+#include "eyetribe/gazeapi.hpp"
 #include <boost/thread/thread.hpp>
-
+#include <boost/thread/mutex.hpp>
 
 struct EyeData
 {
@@ -27,6 +26,8 @@ class TrackingDataReceiver : public gtl::IGazeListener
     TrackingData state;
     boost::mutex stateMutex;
 
+private:
+    void on_gaze_data(gtl::GazeData const & gaze_data);
 public:
     TrackingDataReceiver();
     ~TrackingDataReceiver();
@@ -35,7 +36,7 @@ public:
     void disconnect();
     bool isConnected();
     TrackingData getState();
-    virtual void on_gaze_data(gtl::GazeData const & gaze_data) override;
+    //virtual void on_gaze_data(gtl::GazeData const & gaze_data) override;
 };
 
 #endif

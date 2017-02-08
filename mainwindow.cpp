@@ -28,7 +28,7 @@ void MainWindow::writeCsvHeader(QFile* file, int vid_width, int vid_height, int 
     file->write("frame;time;visible;x;y\n");
 }
 
-void MainWindow::writeCsvData(QFile* file, int frame_idx, QString time, bool visible, double x, double y){
+void MainWindow::writeCsvData(QFile* file, int frame_idx, int time, bool visible, double x, double y){
 
     //int mid_y = video_widget.height() / 2;
     //QRectF bounds(0, mid_y - display_height / 2, display_width, display_height);
@@ -63,18 +63,30 @@ void MainWindow::run(QString vid_path, int fps, QScreen* screen)
     int vid_width = frame.size().width;
     int vid_height = frame.size().height;
 
-    int vid_ratio = vid_width/vid_height;
-    int screen_ratio = screen_width/screen_height;
+    float vid_ratio = (float)vid_width/(float)vid_height;
+    float screen_ratio = (float)screen_width/(float)screen_height;
+    qDebug() << "Video ratio: " << vid_ratio;
+    qDebug() << "Screen ratio: " << screen_ratio;
 
     int display_width = 0;
     int display_height = 0;
+        float top_left_corner_x;
+        float top_left_corner_y;
     if(vid_ratio < screen_ratio){
+            qDebug() << "Video ratio < screen_ratio";
+
         display_height = screen_height;
         display_width = vid_width*display_height/vid_height;
+        top_left_corner_x = (screen_width-display_width)/2;
+        top_left_corner_y = 0;
     }
     else{
+            qDebug() << "Video ratio > screen_ratio";
         display_width = screen_width;
-        display_height = vid_height*display_width/vid_width;
+        //display_height = vid_height*screen_height/vid_width;
+        display_height = vid_height*screen_height/vid_width;
+        top_left_corner_y = (screen_height-display_height)/2;
+        top_left_corner_x = 0;
     }
 
     cv::Size display_size = cv::Size(display_width,display_height);
@@ -97,6 +109,7 @@ void MainWindow::run(QString vid_path, int fps, QScreen* screen)
     cv::setWindowProperty("video", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 
     TrackingData state = tracker.getState();
+    int time = 0;
     bool visible = true;
         cv::Mat resized_frame;
         //cap.release();
@@ -107,33 +120,46 @@ void MainWindow::run(QString vid_path, int fps, QScreen* screen)
         qDebug() << "Frame count: " << frameCnt;
         qDebug() << "Fps: " << fps;
 
+        qDebug() << "top_left_corner_x = " << top_left_corner_x;
+        qDebug() << "top_left_corner_y = " << top_left_corner_y;
+        float x = (1537 - top_left_corner_x) ;
+        float y = (0 - top_left_corner_y) ;
+        qDebug() << "(x0,y0) = (" << x << "," << y << ")";
+
+    cap >> frame; // get a new frame from camera
+    bool playing = false;
     while(true)
     {
-        cap >> frame; // get a new frame from camera
-        if(frame.empty()) break;
-        cv::resize(frame,resized_frame,display_size);
         char key = (char) cv::waitKey(1000/fps);
         if(key == 32){
           qDebug() << "Pressed spacebar";
-          visible= !visible;
+          playing = true;
         }
-        if(visible)
-          cv::putText(resized_frame, overlay_msg.toStdString(), msg_pos, cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0,true);
-        else{
-          cv::putText(resized_frame, overlay_msg.toStdString(), msg_pos, cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0,true);
+        if(playing){
+                cap >> frame; // get a new frame from camera
+                if(frame.empty()) break;
         }
+        cv::resize(frame,resized_frame,display_size);
+        //if(visible)
+        //  cv::putText(resized_frame, overlay_msg.toStdString(), msg_pos, cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0,true);
+        //else{
+        //  cv::putText(resized_frame, overlay_msg.toStdString(), msg_pos, cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0,true);
+        //}
 
         state = tracker.getState();
-        int mid_y = display_height / 2;
-        QRectF bounds(0, mid_y - display_height / 2, display_width, display_height);
-        float x = (state.x - bounds.x()) / bounds.width();
-        float y = (state.y - bounds.y()) / bounds.height();
-        writeCsvData(tracking_data, frame_idx++, 0, visible, x, y);
-        qDebug() << "Gaze position: (x,y) = (" << x << "," << y << ")";
+        float x_norm = (state.x) / display_width;
+        float y_norm = (state.y) / display_height;
+        if(playing){
+                writeCsvData(tracking_data, frame_idx++, time, visible, x_norm, y_norm);
+                qDebug() << "Gaze position: (x,y) = (" << x_norm << "," << y_norm << ")";
+        }
 
+        //cv::Point this_point = cv::Point(x_to_draw,y_to_draw);
+        cv::Point this_point = cv::Point(state.x - top_left_corner_x,state.y - top_left_corner_y);
         //cv::circle(resized_frame, cv::Point(state.x - bounds.width(),state.y-bounds.height()),10, cv::Scalar(0,255,0),2, 8,0);
-        cv::circle(resized_frame, cv::Point(state.x ,state.y),10, cv::Scalar(0,255,0),2, 8,0);
+        cv::circle(resized_frame, this_point,10, cv::Scalar(0,255,0),2, 8,0);
         cv::imshow("video", resized_frame);
+        playing = false;
     }
     qDebug() << "Closing csv file: " << data_path;
     tracking_data->close();

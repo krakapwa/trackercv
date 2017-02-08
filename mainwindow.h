@@ -26,7 +26,7 @@ public:
 
 private:
         void writeCsvHeader(QFile* file, int vid_width, int vid_height, int disp_width, int disp_height);
-        void writeCsvData(QFile* file, int frame_idx, QString time, bool visible, double x, double y);
+        void writeCsvData(QFile* file, int frame_idx, int time, bool visible, double x, double y);
     QFile *tracking_data;
     TrackingDataReceiver tracker;
     std::int64_t trackerInitialTimestamp;
